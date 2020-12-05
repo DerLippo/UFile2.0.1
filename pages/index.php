@@ -21,16 +21,29 @@ else
 			<section>
 				<div id="login_register_action">
 					<div id="login_register_form_wrapper">
-						<h2 id="login_register_form_title">Wir freuen uns, dich wiederzusehen.</h2>
+						<div class="system_message red_message" style="display:none;"></div>
+						<h2 id="login_register_form_title"><?php echo get_content('login_register_title', $client_lang); ?></h2>
 						<div class="login_register_input_wrapper">
-							<span class="login_register_input_title">Benutzername</span>
-							<input class="login_register_input" type="text" name="username" placeholder="Type your username" value="Monkey Pussy">
+							<span class="login_register_input_title"><?php echo get_content('login_register_username_title', $client_lang); ?></span>
+							<input id="username_input" class="login_register_input" type="text" placeholder="<?php echo get_content('login_register_username_placeholder', $client_lang); ?>" value="" onkeyup="login_register('username');">
+						</div>
+						
+						<div id="email_wrapper" class="login_register_input_wrapper" style="display:none;">
+							<span id="email_title" class="login_register_input_title" style="display:none;"><?php echo get_content('login_register_email_title', $client_lang); ?></span>
+							<input id="email_input" class="login_register_input" type="email" placeholder="<?php echo get_content('login_register_email_placeholder', $client_lang); ?>" value="" onkeyup="login_register('email');" style="display:none;">
 						</div>
 
-						<div class="login_register_input_wrapper login_register_input_wrapper_preview">
-							<span class="login_register_input_title login_register_input_title_preview">Passwort</span>
-							<input class="login_register_input login_register_input_preview" type="password" name="password" value="" disabled>
+						<div id="password_wrapper" class="login_register_input_wrapper login_register_input_wrapper_preview">
+							<span id="password_title" class="login_register_input_title login_register_input_title_preview"><?php echo get_content('login_register_password_title', $client_lang); ?></span>
+							<input id="password_input" class="login_register_input login_register_input_preview" type="password" value="" onkeyup="login_register('password');" disabled>
 						</div>
+						
+							<p id="login_register_agb" style="display:none;">Lorem ipsum dolor sit amet consete scing elitr, sed diam nonumy eirmod</p>
+						<center>
+							<button id="login_button" class="login_register_button" onclick="login_register('login')" style="display:none;"><i class="fas fa-arrow-circle-right"></i></button>
+							<button id="register_button" class="login_register_button" onclick="login_register('register')" style="display:none;"><i class="fas fa-arrow-circle-right"></i></button>
+						</center>
+						
 					</div>
 				</div>
 			</section>
@@ -39,62 +52,145 @@ else
 		
 		
 <script>
-function login() {
+function login_register(action) {
 
-	var room_hash = document.getElementById("login_room_hash").value;
-	var room_id = document.getElementById("login_room_id").value;
-	var username = document.getElementById("login_username").value;
-	var password = document.getElementById("login_password").value;
-	
+	var username = document.getElementById("username_input").value;
+	var email = document.getElementById("email_input").value;
+	var password = document.getElementById("password_input").value;
 
+	if(username == '') {
 	
-	if((username == null) || (password == null)) {
+		//Hide E-Mail
+		$('#email_wrapper').fadeOut(250);
+		$('#email_title').fadeOut(250);
+		$('#email_input').fadeOut(250);
+		$('#email_input').val('');
 		
-		//$( "#login_button" ).show();
-		//$( "#register_button" ).show();
-		
+		//Hide Password
+		$("#password_wrapper").addClass("login_register_input_wrapper_preview");
+		$("#password_title").addClass("login_register_input_title_preview");
+		$("#password_input").addClass("login_register_input_preview");
+		$('#password_input').attr("disabled", true);
+		$('#password_input').val('');
+	
 	}
 	else
 	{
+		
+
+
+		if(email != '') {
+			//Show Register Button 
+			$('#login_register_agb').fadeIn(250);
+			$('#login_button').fadeOut(250);
+			$('#register_button').fadeIn(250);
+		}
+		else
+		{
+			
+			if(password != '') {
+				//Show Login Button
+				$('#login_register_agb').fadeIn(250);
+				$('#register_button').fadeOut(250);
+				$('#login_button').fadeIn(250);
+			}
+			else
+			{
+				//Show nothing
+				$('#login_register_agb').fadeOut(250);
+				$('#login_button').fadeOut(250);
+				$('#register_button').fadeOut(250);
+			}
+			
+		}
+		
+		
 		$.ajax(
 			{
-			url: '<?php echo $url; ?>/php/function/login.php',
+			url: '<?php echo $url; ?>/php/function/signup/signup.php',
 			type: 'post',
 			dataType:'text',
-			data: {username: username, password: password},
+			async: false,
+			data: {username: username, email: email, password: password, action: action},
 			success: function(result){
 				
-				console.log(result);
+				console.log('result:' + result);
 				
-				
-				if(result == "success") {
+				if(result == "user_exists") {
+					
+					//Hide E-Mail for login
+					$('#email_wrapper').fadeOut(250);
+					$('#email_title').fadeOut(250);
+					$('#email_input').fadeOut(250);
+					$('#email_input').val('');
+					
+					//Show Password
+					$("#password_wrapper").removeClass("login_register_input_wrapper_preview");
+					$("#password_title").removeClass("login_register_input_title_preview");
+					$("#password_input").removeClass("login_register_input_preview");
+					$('#password_input').prop("disabled", false);
+					
+
+				}else if(result == "user_available") {
+					
+					//Show E-Mail for register
+					$('#email_wrapper').fadeIn(500);
+					$('#email_title').fadeIn(500);
+					$('#email_input').fadeIn(500);
+					
+					//Hide Password and Show Preview
+					$("#password_wrapper").addClass("login_register_input_wrapper_preview");
+					$("#password_title").addClass("login_register_input_title_preview");
+					$("#password_input").addClass("login_register_input_preview");
+					$('#password_input').attr("disabled", true);	
+					$('#password_input').val('');
+					
+					
+					
+				}else if(result == "email_exists") {
+	
+					//Hide Password and Show Preview
+					$("#password_wrapper").addClass("login_register_input_wrapper_preview");
+					$("#password_title").addClass("login_register_input_title_preview");
+					$("#password_input").addClass("login_register_input_preview");
+					$('#password_input').attr("disabled", true);	
+					$('#password_input').val('');
+					
+					//Show Error
+					$('.system_message').html('Diese E-Mail Adresse existiert bereits!');
+					$('.system_message').hide().fadeIn(250);
+					
+					$('#login_button').fadeOut(250);
+					$('#register_button').fadeOut(250);
+						
+				}else if(result == "email_available") {
+
+					//Show Password
+					$("#password_wrapper").removeClass("login_register_input_wrapper_preview");
+					$("#password_title").removeClass("login_register_input_title_preview");
+					$("#password_input").removeClass("login_register_input_preview");
+					$('#password_input').prop("disabled", false);
+					
+					//Hide Error
+					$('.system_message').hide().fadeOut(250);
+					
+				}else if(result == "password_short") {
+	
+					//Show Error
+					$('.system_message').html('Dein Passwort ist zu kurz!');
+					$('.system_message').hide().fadeIn(250);
+						
+				}else if(result == "password_wrong") {
+
+					//Show Error
+					$('.system_message').html('Dein Passwort ist falsch!');
+					$('.system_message').hide().fadeIn(250);
+					
+				}else if(result == 'success') {
 					
 					window.location.replace('<?php echo $url; ?>/page/dashboard');
-
-				}else if(result == "registered") {
-					
-					$('#login_message_success').html('You are now registered!');
-					$( "#login_message_success" ).fadeIn();
-					window.location.replace('<?php echo $url; ?>/page/dashboard');
-					
-
-		
-				}else if(result != 'null'){
-					
-				
-					$('#login_message_error').html(result);
-					$( "#login_message_error" ).fadeIn();
-				
-				
-				}
-				else if(result == null) {
-				
-					window.location.replace('<?php echo $url; ?>');
 					
 				}
-				
-				$( "#login_button" ).show();
-				$( "#register_button" ).show();
 			}
 		})
 	}

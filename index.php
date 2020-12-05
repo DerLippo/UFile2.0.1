@@ -98,9 +98,10 @@ if($subdomain_lang == 'en') {
 
 </head>
 <body>
-    <div id="app" class="transparent_bg">
 
+<div id="page_loader" class="page_loader_animate">Loading</div>
 
+	<div id="wrapper" style="display:none;">
 <?php
 		//Page System
 		
@@ -132,26 +133,22 @@ if($subdomain_lang == 'en') {
 			{
 				$request_page = NULL; //Goto Main Page (INDEX)
 			}
-		}elseif($request_page == 'old_login') {
-			
-			//Check if user is logged in
-			if($myuserid == NULL) {
-			
-				require $_SERVER['DOCUMENT_ROOT']."/pages/old_login.php";
-				$require_check = 1;
-			}
-			else
-			{
-				$request_page = NULL; //Goto Main Page (INDEX)
-			}
 		}
 		
 	
 		if($request_page == NULL) {
 				
-			$security_check = 1;
-			require "pages/index.php";
-			$require_check = 1;
+			//Check if user is logged in
+			if($myuserid == NULL) {
+			
+				require $_SERVER['DOCUMENT_ROOT']."/pages/index.php";
+				$require_check = 1;
+			}
+			else
+			{
+				require $_SERVER['DOCUMENT_ROOT']."/pages/dashboard.php";
+				$require_check = 1;
+			}
 
 		}
 
@@ -165,5 +162,10 @@ if($subdomain_lang == 'en') {
 		
 ?>
     </div>
+<script>
+$("#page_loader").delay(0).fadeOut(0);
+$("#wrapper").delay(0).fadeIn(0);
+</script>
+
 </body>
 </html>

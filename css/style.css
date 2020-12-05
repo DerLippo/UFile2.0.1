@@ -128,8 +128,44 @@ color: #dd0e0e !important;
 .url_color {
 color: #2683FF !important;	
 }
+/* Page Loader START */
+#page_loader {
+position: relative;
+height: 100vh;
+width: 100vw;
+/* background: #181818; */
+font-size: 2em;
+color: #fff;
+}
 
+.page_loader_animate {
+display:flex;
+justify-content: center;
+align-items: center;
+height:100%;
+margin: auto;
+font-family: Helvetica, sans-serif, Arial;
+animation: page_loader 1.2s infinite 0s ease-in-out;
+animation-direction: alternate;
+text-shadow: 0 0 1px white;
+}
 
+@keyframes page_loader {
+    0%{		
+        opacity: 1;
+/*         font-size: 12px; */
+ 		font-weight:600;
+ 		filter: blur(5px);
+		letter-spacing: 3px;
+    }
+    100%{
+        opacity: 0.08;
+/*       font-size: 10px; */
+		font-weight: 400;
+		filter: blur(0);
+    }
+}
+/* Page Loader END */
 #login_register {
 width:100vw;
 height:100vh;
@@ -209,12 +245,23 @@ color:transparent !important;
 -ms-user-select: none;      
 user-select: none;
 }
-
 .login_register_input_wrapper_preview {
 background: #ffffff29 !important;
 }
 .login_register_input_preview {
 background: none !important;
+}
+#login_register_agb {
+color: #fff;
+text-align: center;
+margin: auto;
+}
+.login_register_button {
+border-radius: 100%;
+background: none;
+padding: 0px;
+font-size: 40px;
+color: #fff;	
 }
 
 @media (max-width:900px){
